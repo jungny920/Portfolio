@@ -1,0 +1,47 @@
+html,
+body {
+  height: 100%;
+}
+
+body .info {
+  display: -ms-flexbox;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #f5f5f5;
+}
+
+.info div + label {
+	display: block;
+}
+
+.info div p {
+	font-size: 13px;
+}
+
+.phone_number {
+	border: solid 1px lightgray;
+    height: 38px;
+    width: 161px;
+    border-radius: 4px;
+}
+
+.email_tag {
+	border: solid 1px lightgray;
+    height: 38px;
+    width: 159px;
+    border-radius: 4px;
+}
+
+.dash, .at {
+	color: gray;
+	padding-left: 3px;
+}
+
+input[name='e_code'] {
+	border: solid 1px lightgray;
+    height: 38px;
+	width: 232.8px;
+    border-radius: 4px;
+}

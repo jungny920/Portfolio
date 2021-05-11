@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- 라이브러리를 통하여 객체(bean)을 생성하는 작업은 root-context.xml에서 한다. -->
+	<!-- property 엘리먼트 > Setter 메서드 가리킨다. -->
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		
+		<!-- 배포용 -->
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@simkserver.chjk6oxw9v8w.ap-northeast-2.rds.amazonaws.com:1521:orcl"/>
+		
+		<!-- log4jdbc-log4j2 -->
+		<!-- 개발용으로 사용. 성능이 떨어짐  -->
+		<!-- 
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"/>
+		
+		<property name="username" value="pf_sim"/>
+		<property name="password" value="pf_sim"/>
+		 -->
+		
+		<!-- 운영DB정보 AWS 오라클
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@simkserver.chjk6oxw9v8w.ap-northeast-2.rds.amazonaws.com:1521:orcl"/>
+		-->
+		<property name="username" value="aws_sim"/>
+		<property name="password" value="aws_sim"/>
+	</bean>
+	
+	<!-- constructor-arg 엘리먼트 > 생성자메서드를 가리킨다. -->
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="hikariConfig"/>
+	</bean>
+	
+	<!-- Mybatis에서는 SqlSession, SqlSessionFactory 2가지 핵심개체 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<tx:annotation-driven />
+	
+	<!-- JavaMailSenderImpl클래스를 bean객체로 설정시 메일버서의 정보를 구성해야 한다. Gmail계정정보를 사용(보안설정 낮게 ) -->
+	<!-- https://myaccount.google.com/lesssecureapp 구글 보안수준 낮은 앱 엑세스 허용 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	  <property name="host" value="smtp.gmail.com" />
+	  <property name="port" value="587" />
+	  <property name="username" value="id@email" />
+	  <property name="password" value="password" />
+	  <property name="javaMailProperties">
+	  <props>
+	    <prop key="mail.smtp.auth">true</prop>
+	    <prop key="mail.smtp.starttls.enable">true</prop>
+	  </props>
+	  </property>
+	</bean>
+	
+	<mybatis-spring:scan base-package="com.simpf.mapper"/>
+	
+	<context:component-scan base-package="com.simpf.service" />
+	
+
+</beans>

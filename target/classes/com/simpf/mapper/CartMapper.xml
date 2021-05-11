@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.simpf.mapper.CartMapper">
+
+	<insert id="addCart">
+		merge into MALL_SHOP_CART
+		    using dual 
+		    on (ui_id = #{ui_id} and pd_code = #{pd_code})
+		when matched then 
+		    update set sc_amount = sc_amount + #{sc_amount}
+		when not matched then
+		    insert (sc_code, ui_id, pd_code, sc_amount)
+		    values (cart_code_seq.nextval, #{ui_id}, #{pd_code}, #{sc_amount})
+	</insert>
+	
+	<select id="cartList" resultType="com.simpf.domain.CartVOList">
+		select c.sc_code, c.sc_amount,
+			p.pd_code, p.pd_image, p.pd_name, p.pd_price, p.pd_company, p.pd_amount
+		from MALL_PRODUCT p 
+			inner join MALL_SHOP_CART c
+			on p.pd_code = c.pd_code
+		where c.ui_id = #{ui_id}
+	</select>
+	
+	
+	<delete id="deleteCart">
+		delete MALL_SHOP_CART
+		where sc_code = #{sc_code}
+	</delete>
+	<delete id="allDeleteCart">
+		delete MALL_SHOP_CART
+		where ui_id = #{ui_id}
+	</delete>
+	<delete id="checkedDeleteCart">
+		delete MALL_SHOP_CART
+		where sc_code in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<select id="checkedOrderCart" resultType="com.simpf.domain.CartVOList">
+		select c.sc_code, c.sc_amount,
+			p.pd_code, p.pd_image, p.pd_name, p.pd_price, p.pd_company, p.pd_amount
+		from MALL_PRODUCT p
+		    inner join MALL_SHOP_CART c
+		    on p.pd_code = c.pd_code and c.sc_code in 
+			<foreach collection="list" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		where c.ui_id = #{ui_id}
+	</select>
+	
+	<update id="updateCart">
+		update MALL_SHOP_CART
+		set sc_amount = #{sc_amount}
+		where sc_code = #{sc_code}
+	</update>
+	
+	<select id="cart_money" resultType="com.simpf.dto.CartDTO">
+		select p.pd_name, sum(p.pd_price * c.sc_amount) amount 
+		from MALL_SHOP_CART c 
+		    inner join MALL_PRODUCT p 
+		    on c.pd_code = p.pd_code
+		group by p.pd_name
+		order by p.pd_name
+	</select>
+	
+	
+</mapper>

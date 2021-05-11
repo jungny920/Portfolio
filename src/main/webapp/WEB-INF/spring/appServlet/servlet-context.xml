@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+	
+	<!-- 추가 resources 작업 -->
+	<resources mapping="/js/**" location="/resources/js/" />
+	<resources mapping="/css/**" location="/resources/css/" />
+	
+	<!-- admin -->
+	<resources mapping="/bower_components/**" location="/resources/bower_components/" />
+	<resources mapping="/ckeditor/**" location="/resources/bower_components/ckeditor/" />
+	<resources mapping="/dist/**" location="/resources/dist/" />
+	<resources mapping="/plugins/**" location="/resources/plugins/" />
+	
+	<resources mapping="/upload/**" location="/resources/upload/" />
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<!-- root-context, servlet-context 어디서든 작업 가능하다. -->
+	<!-- 업로드 경로를 bean설정
+	<beans:bean id="uploadPath" class="java.lang.String">
+		<beans:constructor-arg value="/usr/local/tomcat/upload/"></beans:constructor-arg>
+	</beans:bean> -->
+	<!-- 윈도우 업로드 경로 -->
+	<beans:bean id="uploadPath" class="java.lang.String">
+		<beans:constructor-arg value="c:\\upload\\"></beans:constructor-arg>
+	</beans:bean>
+	
+	
+	<!-- 업로드되는 파일을 처리하기 위한 bean : 스프링 파라미터 MultipartFile 지원 -->
+	<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+	</beans:bean>
+	<!-- 1) 인터셉터 클래스 생성(HandlerInterceptorAdapter 추상클래스 상속): 3개의 추상메서드를 재정의한다. -->
+	<!-- 2) 인터셉터 클래스를 bean으로 등록한다. (스프링 내에서 클래스를 생성하고 다른쪽에서 객체로 생성, 사용하려면 bean으로 생성한다.) -->
+	<!-- 
+	<beans:bean id="sampleInterceptor" class="com.simpf.interceptor.SampleInterceptor"/>
+	 -->
+	<beans:bean id="userLoginInterceptor" class="com.simpf.interceptor.UserLoginInterceptor"/>
+	<beans:bean id="userAuthInterceptor" class="com.simpf.interceptor.UserAuthInterceptor"/>
+	
+	<beans:bean id="adminLoginInterceptor" class="com.simpf.interceptor.AdminLoginInterceptor"/>
+	<beans:bean id="adminAuthInterceptor" class="com.simpf.interceptor.AdminAuthInterceptor"/>
+	
+	<interceptors>
+		<!-- 
+		<interceptor>
+			<mapping path="/sample/**"/>
+			<beans:ref bean="sampleInterceptor"/>
+		</interceptor>
+		 -->
+		<interceptor>
+			<mapping path="/user/loginPost"/>
+			<beans:ref bean="userLoginInterceptor"/>
+		</interceptor>
+		<interceptor>
+			<mapping path="/user/**"/>
+			<mapping path="/order/*"/>
+			<mapping path="/cart/list"/>
+			<mapping path="/review/*" />
+			<exclude-mapping path="/user/signup/**"/>
+			<exclude-mapping path="/user/authCode"/>
+			<exclude-mapping path="/user/login"/>
+			<exclude-mapping path="/user/loginPost"/>
+			<exclude-mapping path="/user/find/**"/>
+			<exclude-mapping path="/review/page/**"/>
+			<beans:ref bean="userAuthInterceptor"/>
+		</interceptor>
+		
+		<interceptor>
+			<mapping path="/admin/login"/>
+			<beans:ref bean="adminLoginInterceptor"/>
+		</interceptor>
+		<interceptor>
+			<mapping path="/admin/**"/>
+			<exclude-mapping path="/admin/"/>
+			<exclude-mapping path="/admin/login"/>
+			<exclude-mapping path="/admin/join"/>
+			<exclude-mapping path="/admin/signup"/>
+			<beans:ref bean="adminAuthInterceptor"/>
+		</interceptor>
+		
+	</interceptors>
+	
+	<context:component-scan base-package="com.simpf.controller" />
+	
+	
+</beans:beans>

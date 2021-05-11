@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.simpf.mapper.UserMapper">
+
+	<select id="checkingID" resultType="int">
+		select count(*)
+		from mall_user_info
+		where ui_id = #{ui_id}
+	</select>
+	
+	<insert id="signup">
+		insert into mall_user_info(ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, ui_zcode, ui_addr, ui_addr_d)
+		values(#{ui_id}, #{ui_name}, #{ui_pw}, #{ui_phone}, #{ui_email}, #{ui_event_sms}, #{ui_zcode}, #{ui_addr}, #{ui_addr_d})
+	</insert>
+	
+	<select id="login" resultType="com.simpf.domain.UserInfoVO">
+		select ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, ui_zcode, ui_addr, ui_addr_d, ui_point, ui_grade, ui_reg_date, ui_update_date
+		from mall_user_info 
+		where ui_id = #{ui_id}
+	</select>
+	
+	<select id="user_info" resultType="com.simpf.domain.UserInfoVO">
+		select ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, ui_zcode, ui_addr, ui_addr_d, ui_point, ui_grade, ui_reg_date, ui_update_date
+		from mall_user_info 
+		where ui_id = #{ui_id}
+	</select>
+	
+	<update id="info_modify">
+		update mall_user_info
+		set ui_phone = #{ui_phone},	
+			ui_email = #{ui_email}, 
+			ui_event_sms = #{ui_event_sms},	
+			ui_zcode = #{ui_zcode},
+			ui_addr = #{ui_addr}, 
+			ui_addr_d = #{ui_addr_d},	
+			ui_update_date = sysdate
+		where ui_id = #{ui_id}
+	</update>
+	
+	<update id="password_modify">
+		update mall_user_info
+		set ui_pw = #{ui_pw}
+		where ui_id = #{ui_id}
+	</update>
+	
+	<select id="find_id" resultType="string">
+		select ui_id
+		from mall_user_info
+		where ui_name = #{ui_name}
+	</select>
+	
+	<select id="find_pw" resultType="com.simpf.domain.UserInfoVO">
+		select ui_id, ui_email
+		from mall_user_info
+		where ui_id = #{ui_id} and ui_email = #{ui_email}
+	</select>
+	
+	<delete id="user_delete">
+		delete mall_user_info
+		where ui_id = #{ui_id} and ui_pw = #{ui_pw}
+	</delete>
+	
+	<!-- VO클래스 필드와 테이블 컬럼명이 다른 경우 -->
+	<!-- ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, ui_zcode, ui_addr, ui_addr_d, ui_point, ui_grade, ui_reg_date, ui_update_date -->
+	<resultMap type="com.simpf.domain.MemberSample" id="member">
+		<id property="user_id" column="ui_id"/>
+		<id property="user_name" column="ui_name"/>
+		<id property="user_pw" column="ui_pw"/>
+		<id property="user_phone" column="ui_phone"/>
+		<id property="user_email" column="ui_email"/>
+		<id property="user_event_sms" column="ui_event_sms"/>
+		<id property="user_zcode" column="ui_zcode"/>
+		<id property="user_addr" column="ui_addr"/>
+		<id property="user_addr_d" column="ui_addr_d"/>
+		<id property="user_point" column="ui_point"/>
+		<id property="user_grade" column="ui_grade"/>
+		<id property="user_reg_date" column="ui_reg_date"/>
+		<id property="user_update_date" column="ui_update_date"/>
+	</resultMap>
+	
+	<select id="memberList" resultMap="member">
+		select ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, ui_zcode, ui_addr, ui_addr_d, ui_point, ui_grade, ui_reg_date, ui_update_date
+		from mall_user_info 
+	</select>
+	
+	<select id="mypageOrderList" resultType="com.simpf.dto.MyOrderDTO">
+		<![CDATA[
+		select ui_id, pd_code, ord_code, pd_name, pd_image, ord_price, ord_amount, ord_date
+		from (  select rownum rn, ui_id, pd_code, ord_code, pd_name, pd_image, ord_price, ord_amount, ord_date
+			    from (  select rownum rn, d.ui_id, p.pd_code, o.ord_code, p.pd_name, p.pd_image, d.ord_price, d.ord_amount, o.ord_date
+			            from mall_order o
+			                inner join mall_order_detail d
+			                on d.ord_code = o.ord_code
+			                inner join mall_product p
+			                on p.pd_code = d.pd_code
+			            where d.ui_id = #{ui_id}
+			            order by o.ord_date desc
+			           )
+			    where rownum > 0 and  rownum <= #{cri.page} * #{cri.amount}
+		      )
+		where rn > (1-#{cri.page}) * #{cri.amount}
+		]]>
+	</select>
+	
+	<select id="mypageReviewList" resultType="com.simpf.dto.MyReviewDTO">
+		<![CDATA[
+		select a.rv_num, p.pd_code, p.pd_name, p.pd_image, a.rv_cnt, a.rv_image, a.rv_score, a.rv_date
+		from (  select /*+ index_desc(MALL_PD_REVIEW PK_RV_NUM)*/ 
+		            rownum rn, pd_code, rv_num, rv_cnt, rv_image, rv_score, rv_date
+		        from mall_pd_review
+		        where ui_id = #{ui_id} and rownum > 0 and rownum <= #{cri.page} * #{cri.amount}
+		        ) a 
+		        inner join mall_product p
+		        on a.pd_code = p.pd_code
+		where rn > (1-#{cri.page}) * #{cri.amount}
+		order by rn asc
+		]]>
+	</select>
+	
+	<select id="mypageBoardList" resultType="com.simpf.dto.MyBoardDTO">
+		<![CDATA[
+		select a.board_num, a.ui_id, a.pd_code, p.pd_name, a.board_cg, a.board_title, a.board_cnt, a.board_ast, a.board_date
+		from (  select /*+ index_desc(MALL_BOARD PK_BOARD_NUM)*/
+		            rownum rn, board_num, ui_id, pd_code, board_cg, board_title, board_cnt, board_ast, board_date
+		        from MALL_BOARD
+		        where ui_id = #{ui_id} and rownum > 0 and rownum <= #{cri.page} * #{cri.amount}
+		      ) a inner join MALL_PRODUCT p
+		        on a.pd_code = p.pd_code
+		where rn > (1-#{cri.page}) * #{cri.amount}
+		]]>
+	</select>
+	<select id="mypageBoardCnt" resultType="string">
+		select board_cnt
+		from MALL_BOARD
+		where board_num = #{board_num}
+	</select>
+	
+	<select id="adminUserList" resultType="com.simpf.domain.UserInfoVO">
+		<![CDATA[
+		select ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, 
+	       ui_zcode, ui_addr, ui_addr_d, ui_point, ui_grade, ui_reg_date
+		from (  select rownum rn, ui_id, ui_name, ui_pw, ui_phone, ui_email, ui_event_sms, 
+		            ui_zcode, ui_addr, ui_addr_d, ui_point, ui_grade, ui_reg_date
+		        from MALL_USER_INFO
+		        where rownum > 0 and rownum <= #{page} * #{amount}
+		      )
+		where rn > (1-#{page}) * #{amount}
+		order by ui_reg_date desc
+		]]>
+	</select>
+	<select id="userListCount" resultType="int">
+		select count(*)
+		from MALL_USER_INFO
+	</select>
+</mapper>

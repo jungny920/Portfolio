@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.simpf.mapper.ReviewMapper">
+
+	<select id="reviewList" resultType="com.simpf.domain.ReviewVO">
+	<![CDATA[
+		select rv_num, ui_id, pd_code, rv_cnt, rv_image, rv_score, rv_date
+		from ( select /*+ index_desc(MALL_PD_REVIEW PK_RV_NUM)*/
+		            rownum rn, rv_num, ui_id, pd_code, rv_cnt, rv_image, rv_score, rv_date
+		        from MALL_PD_REVIEW
+		        where pd_code = #{pd_code} and rownum > 0 and rownum <= #{cri.page}*#{cri.amount}
+		      )
+		where rn > (#{cri.page}-1)*#{cri.amount}
+	]]>
+	</select>
+
+	<select id="reviewCount" resultType="int">
+		select count(*)
+		from MALL_PD_REVIEW
+		where pd_code = #{pd_code}	
+	</select>
+	
+	<insert id="reviewAdd">
+		insert into MALL_PD_REVIEW(rv_num, ui_id, pd_code, rv_cnt, rv_image, rv_score)
+		values (rv_num_seq.nextval, #{ui_id}, #{pd_code}, #{rv_cnt}, #{rv_image}, #{rv_score})
+	</insert>
+	
+	<select id="reviewData" resultType="com.simpf.domain.ReviewVO">
+		select rv_num, ui_id, pd_code, rv_cnt, rv_image, rv_score, rv_date
+		from MALL_PD_REVIEW
+		where rv_num = #{rv_num}
+	</select>
+	
+	<update id="reviewModify">
+		update MALL_PD_REVIEW
+		set rv_cnt = #{rv_cnt},
+			rv_image = #{rv_image},
+			rv_score = #{rv_score}
+		where rv_num = #{rv_num}
+	</update>
+	
+	<delete id="reviewDelete">
+		delete MALL_PD_REVIEW
+		where rv_num = #{rv_num}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.simpf.mapper.BoardMapper">
+
+	<insert id="addQuestion">
+		insert into mall_board(board_num, ui_id, pd_code, board_cg, board_title, board_cnt)
+		values(board_num_seq.nextval, #{ui_id}, #{pd_code}, #{board_cg}, #{board_title}, #{board_cnt})
+	</insert>
+	
+	<select id="listQuestion" resultType="com.simpf.domain.BoardVO">
+	<![CDATA[
+		select board_num, ui_id, board_ast, board_cg, board_title, board_cnt, board_date
+		from (  select /*+ index_desc(MALL_BOARD PK_BOARD_NUM) */
+		            rownum rn, board_num, ui_id, board_ast, board_cg, board_title, board_cnt, board_date
+		        from MALL_BOARD 
+		        where pd_code = #{pd_code} and board_num > 0 and
+		        rownum > 0 and rownum <= (#{cri.page} * #{cri.amount})
+		    )
+		where rn > (#{cri.page}-1) * #{cri.amount}
+	]]>
+	</select>
+	
+	<select id="listCount" resultType="int">
+		select count(*)
+		from MALL_BOARD
+		where pd_code = #{pd_code}
+	</select>
+	
+</mapper>
