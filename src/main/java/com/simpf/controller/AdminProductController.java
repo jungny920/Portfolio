@@ -106,10 +106,10 @@ public class AdminProductController {
 			byte[] bytes = upload.getBytes();
 			
 			// was(tomcat 9.0)에서 관리하는 프로젝트의 루트경로를 참고, 실제 업로드 경로를 반환
-			String uploadPath = req.getSession().getServletContext().getRealPath("/") + "resources\\upload\\";
+//			String uploadPath = req.getSession().getServletContext().getRealPath("/") + "resources\\upload\\";
 			
 			// 리눅스 업로드 경로
-			//String uploadPath = "/usr/local/tomcat/tomcat-9/webapps/upload/";
+			String uploadPath = "/usr/local/tomcat/tomcat-9/webapps/upload/";
 			if(!new File(uploadPath).exists()) new File(uploadPath).mkdir();
 			
 			uploadPath = uploadPath + fileName;
@@ -122,8 +122,8 @@ public class AdminProductController {
 			// CKEditor에게 업로드한 파일정보를 돌려주어야 한다.
 			printWriter = res.getWriter();
 			// 클라이언트가 직접 요청하는 경로
-			//String fileUrl = "/ckeditor/upload/" + fileName;
-			String fileUrl = "/upload/" + fileName;
+			String fileUrl = "/ckeditor/upload/" + fileName;
+//			String fileUrl = "/upload/" + fileName;
 			
 			// {"filename":"abc.gif", "uploaded":1, "url":"/upload/abc.gif"} json포맷
 			printWriter.println("{\"filename\":\"" + fileName + "\", \"uploaded\":1,\"url\":\"" + fileUrl + "\"}");
