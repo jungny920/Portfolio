@@ -78,16 +78,16 @@
 	
 	<select id="orderSales" resultType="com.simpf.dto.OrderSalesDTO">
 	<![CDATA[
-		select to_char(b.dat, 'YYYY-MM-DD') as dat, to_char(b.dat, 'DY') as day, nvl(a.cnt, 0) as cnt, nvl(total, 0) as price
-		from (  select to_char(ord_date, 'YYYY-MM-DD') as odt, count(*) cnt, sum(ord_total_price) as total
+		select to_char(b.dat, 'yyyy-mm-dd') as dat, to_char(b.dat, 'DY') as day, nvl(a.cnt, 0) as cnt, nvl(total, 0) as price
+		from (  select to_char(ord_date, 'yyyy-mm-dd') as odt, count(*) cnt, sum(ord_total_price) as total
 		        from mall_order
-		        where ord_date between to_date(#{startDate}, 'YYYY-MM-DD') and to_date(#{endDate}, 'YYYY-MM-DD')
-		        group by ord_date
+		        where ord_date between to_date('2021-05-01', 'yyyy-mm-dd') and to_date('2021-05-31', 'yyyy-mm-dd')
+		        group by to_char(ord_date, 'yyyy-mm-dd')
 		      ) a
 		      ,
-		     (  select to_date(#{startDate}, 'YYYY-MM-DD') + level - 1 as dat
+		     (  select to_date('2021-05-01', 'yyyy-mm-dd') + level - 1 as dat
 		        from dual
-		        connect by level <= (to_date(#{endDate}, 'YYYY-MM-DD') - to_date(#{startDate}, 'YYYY-MM-DD') + 1)
+		        connect by level <= (to_date('2021-05-31', 'yyyy-mm-dd') - to_date('2021-05-01', 'yyyy-mm-dd') + 1)
 		      ) b
 		where b.dat = a.odt(+)
 		order by b.dat
