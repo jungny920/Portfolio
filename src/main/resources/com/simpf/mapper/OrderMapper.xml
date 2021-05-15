@@ -78,11 +78,11 @@
 	
 	<select id="orderSales" resultType="com.simpf.dto.OrderSalesDTO">
 	<![CDATA[
-		select b.dat, to_char(b.dat, 'DY') as day, nvl(a.cnt, 0) as cnt, nvl(total, 0) as price
+		select to_char(b.dat, 'YYYY-MM-DD') as dat, to_char(b.dat, 'DY') as day, nvl(a.cnt, 0) as cnt, nvl(total, 0) as price
 		from (  select to_char(ord_date, 'YYYY-MM-DD') as odt, count(*) cnt, sum(ord_total_price) as total
 		        from mall_order
 		        where ord_date between to_date(#{startDate}, 'YYYY-MM-DD') and to_date(#{endDate}, 'YYYY-MM-DD')
-		        group by to_char(ord_date, 'YYYY-MM-DD')
+		        group by ord_date
 		      ) a
 		      ,
 		     (  select to_date(#{startDate}, 'YYYY-MM-DD') + level - 1 as dat
@@ -96,10 +96,20 @@
 	
 	<!-- 매출 출력(일주일) 차트화 -->
 	<select id="salesChart" resultType="com.simpf.dto.ChartDTO">
-		select count(*) chart_count, sum(ord_total_price) chart_price, to_char(ord_date, 'yyyy-mm-dd') chart_date
-		from MALL_ORDER
-		where ord_date between TRUNC(sysdate , 'd') and TRUNC(sysdate , 'd')+6
-		group by to_char(ord_date, 'yyyy-mm-dd')
-		order by to_char(ord_date, 'yyyy-mm-dd')
+	<![CDATA[
+		select to_char(b.dat, 'yyyy-mm-dd') as chart_date, nvl(a.chart_price, 0) as chart_price, nvl(a.chart_count, 0) chart_count
+		from (
+		        select count(*) chart_count, sum(ord_total_price) chart_price, to_char(ord_date, 'yyyy-mm-dd') chart_date
+		        from MALL_ORDER
+		        where ord_date between TRUNC(sysdate , 'd') and TRUNC(sysdate , 'd')+7
+		        group by to_char(ord_date, 'yyyy-mm-dd')
+		        ) a,
+		        (   select TRUNC(sysdate , 'd') + level -1 as dat
+		            from dual
+		            connect by level <= 7
+		        ) b
+		where b.dat = a.chart_date(+)
+		order by b.dat
+	]]>
 	</select>
 </mapper>

@@ -94,15 +94,7 @@ desired effect
 					<div class="col-lg-12">
 						<div class="panel panel-default">
 							<div class="panel-heading">
-								<h4 style="display: inline;">상품 목록</h4>
-								<select class="change_amount pull-right" name="amount">
-									<option value="3">3</option>
-									<option value="5">5</option>
-									<option value="10">10</option>
-									<option value="15">15</option>
-									<option value="20">20</option>
-								</select>
-							</div>
+								<h4 style="display: inline;">매출 통계</h4>							</div>
 							<div class="panel-body">
 								<!-- 리스트(테이블) 삽입 -->
 								<table class="table table-striped">
@@ -116,7 +108,7 @@ desired effect
 								  <tbody>
 								  <c:forEach items="${date}" var="sales">
 								    <tr>
-								      <td><fmt:formatDate value="${sales.dat}" pattern="yyyy-MM-dd" /> (${sales.day})</td>
+								      <td><%--<fmt:formatDate value="${sales.dat}" pattern="yyyy-MM-dd" /> --%>${sales.dat} (${sales.day})</td>
 								      <td><c:out value="${sales.cnt}" /></td>
 								      <td><fmt:formatNumber type="currency" value="${sales.price}" /></td>
 							        </tr>

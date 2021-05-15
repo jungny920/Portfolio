@@ -42,13 +42,13 @@
 			  <!-- 업로드 날짜 폴더 데이터 원본파일 중 아무거나 입력하기 -->
 			  <div class="carousel-inner" style="text-align: center;">
 			    <div class="carousel-item active">
-			      <img src="util/image?fileName=2021/05/04/66db115d-3752-49e3-bc96-c48d1df13b1b_cut_male_suit.jpg" alt="Los Angeles" width="1100" height="500">
+			      <img src="util/image?fileName=2021/05/11/01c665a9-0c29-451b-b2ed-8099d2054906_PIXNIO-shoes_mbr.jfif" alt="Los Angeles" width="1100" height="600">
 			    </div>
 			    <div class="carousel-item">
-			      <img src="util/image?fileName=2021/05/04/63b5f8fe-a4af-4609-85f8-2adefc44f4b3_wrist-watch.jpg" alt="Chicago" width="1100" height="500">
+			      <img src="util/image?fileName=2021/05/11/387ed246-f833-4c5c-a18f-994e757b7d74_wrist-watch.jpg" alt="Chicago" width="1100" height="600">
 			    </div>
 			    <div class="carousel-item">
-			      <img src="util/image?fileName=2021/05/04/940a5418-202d-4b8a-9e01-3cec5da7af63_cut_girl-jean.jpg" alt="New York" width="1100" height="500">
+			      <img src="util/image?fileName=2021/05/11/d355ac05-1305-4f29-8c34-e5bb86c2125b_cut_male_suit.jpg" alt="New York" width="1100" height="600">
 			    </div>
 			  </div>
 			  

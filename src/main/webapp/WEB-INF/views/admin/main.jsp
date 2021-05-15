@@ -46,7 +46,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     	chart.draw(data, {
     		title : "주간 매출",
     		//curveType : "function", //curveType는 차트의 모양이 곡선으로 바뀐다는 뜻
-    		width : 600,
+    		width : 800,
     		height : 400
     	});
     }

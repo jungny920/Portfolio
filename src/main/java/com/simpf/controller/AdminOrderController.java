@@ -81,8 +81,8 @@ public class AdminOrderController {
 		int cur_month;
 		
 		if(year != null && month != null) {
-			cur_year = year;
-			cur_month = month-1; // 클라이언트에서 전송된 값에 -1로 처리해야한다.
+			cur_year = (int)year;
+			cur_month = ((int)month)-1; // 클라이언트에서 전송된 값에 -1로 처리해야한다.
 		} else {
 			cur_year = cal.get(Calendar.YEAR);
 			cur_month = cal.get(Calendar.MONTH);
@@ -112,7 +112,7 @@ public class AdminOrderController {
 		log.info("말일: "+endDate);
 		
 		model.addAttribute("date", orderService.orderSales(startDate, endDate));
-		
+//		model.addAttribute("date", orderService.orderSales("2021-05-01", "2021-05-31"));
 		
 		
 		return "/admin/order/order_sale";
