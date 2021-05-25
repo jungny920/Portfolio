@@ -7,7 +7,7 @@
 		<h5><a href="#" style="color: black; text-decoration: none;"><strong>카테고리</strong></a></h5>
 	</li>	
 <c:forEach items="${mainCategoryList}" var="cg_list">
-	<li class="list-group-item main_cg" style="background-color: #f5f4f0; display: none;">
+	<li class="list-group-item main_cg" style="background-color: #f5f4f0;">
 		<a href="#" data-code="${cg_list.cg_code}" style="color: black; text-decoration: none;">
 			<strong>${cg_list.cg_name}</strong></a>
         <!-- 2차 카테고리 출력 위치-->
@@ -25,11 +25,12 @@
 </script>
 <script>
 $(document).ready(function(){
+	/*
 	$('.group_cg').on('click', function(){
 		$('.main_cg').toggle();
 		$('.main_cg .sub_cg').empty();
 	});
-	
+	*/
 	$('.main_cg').on('click', function(e){
 		var category = $(this);
 		// '.main_cg'의 'a'태그의 'href'값을 cg_code로 받아옴.
